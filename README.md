@@ -2,7 +2,7 @@
 
 **WHAT:** Render Markdown file into HTML on save
 
-**WHY:** I take notes in Markdown format. I frequently sent notes to other people. I can quickly copy/paste HTML formatted text into chat windows and emails.
+**WHY:** I take notes in Markdown format. I frequently sent notes to other people. Using this I can quickly copy/paste pretty HTML formatted text into chat windows and emails.
 
 ## Install
 

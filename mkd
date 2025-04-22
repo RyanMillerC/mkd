@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -e
+
+FILENAME="$1"
+
+# Validate FILENAME is a file
+[[ -f "$FILENAME" ]] || exit 'USAGE: mkd FILENAME'
+
+markdown_render() {
+  echo "Rendering $FILENAME..."
+
+  # Remove existing mkd directory
+  [[ -d /tmp/mkd ]] && rm -rf /tmp/mkd
+
+  # Generate Markdown file into HTML
+  generate-md \
+	  --layout github \
+	  --input "$FILENAME" \
+	  --output /tmp/mkd
+
+  # Rename HTML file so the next command will work
+  mv /tmp/mkd/*.html /tmp/mkd/index.html
+
+  echo "Done rendering $FILENAME!"
+}
+
+# Export function so xargs will work
+export -f markdown_render
+
+# Run first time
+markdown_render
+
+# Open in browser
+open /tmp/mkd/index.html
+
+# Re-run on change
+# (Kinda hacky but it's more hacky to make xargs work with a bash function)
+fswatch -o "$FILENAME" | while read ; do
+  markdown_render
+done

@@ -21,8 +21,11 @@ fi
 markdown_render() {
   echo "Rendering $FILENAME..."
 
-  # Remove existing mkd directory
-  [[ -d /tmp/mkd ]] && rm -rf /tmp/mkd
+  # Remove mkd directory contents, if directory exists
+  [[ -d /tmp/mkd ]] && rm -rf /tmp/mkd/*
+
+  # Create mkd directory, if it doesn't exist
+  [[ -d /tmp/mkd ]] || mkdir /tmp/mkd
 
   # Generate Markdown file into HTML
   generate-md \
@@ -36,14 +39,34 @@ markdown_render() {
   echo "Done rendering $FILENAME!"
 }
 
-# Run first time
+# Render once first time
 markdown_render
 
-# Open in browser
-open /tmp/mkd/index.html
+# Run web server that reloads on change in the background
+# (Weird things happened on port 5000... 7000 seems ok.)
+livereload --port 7000 /tmp/mkd &
+PID_LIVERELOAD=$!
 
-# Re-run on change
+# Open page in browser
+open http://localhost:7000
+
+# Re-render on change in the background
 # (Kinda hacky but it's more hacky to make xargs work with a bash function)
-fswatch -o "$FILENAME" | while read ; do
+fswatch --one-per-batch "$FILENAME" | while read ; do
   markdown_render
-done
+done &
+PID_FSWATCH=$!
+
+# Function to stop background processes
+cleanup() {
+  echo 'CTRL-C received, stopping background processes...'
+  kill $PID_FSWATCH $PID_LIVERELOAD
+  wait $PID_FSWATCH $PID_LIVERELOAD
+  exit
+}
+
+# Call cleanup when CTRL-C is pressed
+trap cleanup SIGINT
+
+# Keep script running until CTRL-C is pressed
+wait

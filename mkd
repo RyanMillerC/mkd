@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# Render Markdown into HTML on save
+#
+# USAGE: mkd FILENAME
+#
 
 set -e
 

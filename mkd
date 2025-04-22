@@ -10,7 +10,12 @@ set -e
 FILENAME="$1"
 
 # Validate FILENAME is a file
-[[ -f "$FILENAME" ]] || exit 'USAGE: mkd FILENAME'
+if [[ ! -f "$FILENAME" ]] ; then
+  echo "ERROR: $FILENAME is not a file" >&2
+  echo # Newline
+  echo 'USAGE: mkd FILENAME' >&2
+  exit 1
+fi
 
 # Function will be run multiple times
 markdown_render() {

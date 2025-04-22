@@ -12,6 +12,7 @@ FILENAME="$1"
 # Validate FILENAME is a file
 [[ -f "$FILENAME" ]] || exit 'USAGE: mkd FILENAME'
 
+# Function will be run multiple times
 markdown_render() {
   echo "Rendering $FILENAME..."
 
@@ -29,9 +30,6 @@ markdown_render() {
 
   echo "Done rendering $FILENAME!"
 }
-
-# Export function so xargs will work
-export -f markdown_render
 
 # Run first time
 markdown_render
